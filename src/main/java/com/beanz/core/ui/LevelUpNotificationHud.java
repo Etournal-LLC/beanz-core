@@ -12,7 +12,7 @@ public class LevelUpNotificationHud extends CustomUIHud {
     private boolean visible;
 
     public LevelUpNotificationHud(PlayerRef playerRef) {
-        super(playerRef);
+        super(playerRef, "beanz:level_up");
     }
 
     public void showNotification(String title, String subtitle) {

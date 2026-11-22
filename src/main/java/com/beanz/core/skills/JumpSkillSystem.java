@@ -10,7 +10,7 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.AndQuery;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
-import com.hypixel.hytale.math.vector.Vector3d;
+import org.joml.Vector3d;
 import com.hypixel.hytale.protocol.ChangeVelocityType;
 import com.hypixel.hytale.protocol.MovementSettings;
 import com.hypixel.hytale.protocol.MovementStates;
@@ -28,7 +28,8 @@ import com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue;
 import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
 import com.hypixel.hytale.server.core.modules.splitvelocity.VelocityConfig;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
+import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.accessor.SectionReader;
 
 public class JumpSkillSystem extends EntityTickingSystem<EntityStore> {
     private static final FluentLogger LOGGER = FluentLogger.forEnclosingClass();
@@ -521,9 +522,10 @@ public class JumpSkillSystem extends EntityTickingSystem<EntityStore> {
         CollisionResultComponent collisionResultComponent,
         TransformComponent transformComponent,
         Velocity velocity,
-        JumpAbilityStateComponent jumpState
+        JumpAbilityStateComponent jumpState,
+        World world
     ) {
-        Vector3d detectedWallNormal = findWallNormal(collisionResultComponent, transformComponent, velocity);
+        Vector3d detectedWallNormal = findWallNormal(collisionResultComponent, transformComponent, velocity, world);
 
         if (detectedWallNormal != null) {
             jumpState.updateRecentWallContact(detectedWallNormal, WALL_CONTACT_GRACE_TICKS);
@@ -643,8 +645,8 @@ public class JumpSkillSystem extends EntityTickingSystem<EntityStore> {
         double previousX = velocity.getX();
         double previousY = velocity.getY();
         double previousZ = velocity.getZ();
-        double horizontalX = wallNormal.getX() * horizontalForce;
-        double horizontalZ = wallNormal.getZ() * horizontalForce;
+        double horizontalX = wallNormal.x() * horizontalForce;
+        double horizontalZ = wallNormal.z() * horizontalForce;
         double finalX = horizontalX;
         double finalY = Math.max(previousY, 0.0) + appliedJumpForce;
         double finalZ = horizontalZ;
@@ -655,9 +657,9 @@ public class JumpSkillSystem extends EntityTickingSystem<EntityStore> {
             "Wall jump used for %s: level=%s, wallNormal=(%.3f, %.3f, %.3f), previousVelocity=(%.3f, %.3f, %.3f), horizontalForce=%.3f, appliedBoost=(%.3f, %.3f, %.3f), finalVelocity=(%.3f, %.3f, %.3f), movementPath=velocity_instruction_set",
             ref,
             skills.getLevel(SkillType.JUMP),
-            wallNormal.getX(),
-            wallNormal.getY(),
-            wallNormal.getZ(),
+            wallNormal.x(),
+            wallNormal.y(),
+            wallNormal.z(),
             previousX,
             previousY,
             previousZ,
@@ -683,15 +685,16 @@ public class JumpSkillSystem extends EntityTickingSystem<EntityStore> {
     private Vector3d findWallNormal(
         CollisionResultComponent collisionResultComponent,
         TransformComponent transformComponent,
-        Velocity velocity
+        Velocity velocity,
+        World world
     ) {
         if (collisionResultComponent == null) {
-            return findAdjacentWallNormal(transformComponent);
+            return findAdjacentWallNormal(transformComponent, world);
         }
 
         CollisionResult collisionResult = collisionResultComponent.getCollisionResult();
         if (collisionResult == null) {
-            return findAdjacentWallNormal(transformComponent);
+            return findAdjacentWallNormal(transformComponent, world);
         }
 
         Vector3d bestNormal = null;
@@ -704,12 +707,12 @@ public class JumpSkillSystem extends EntityTickingSystem<EntityStore> {
             }
 
             Vector3d normal = collisionData.collisionNormal;
-            if (normal == null || Math.abs(normal.getY()) > WALL_NORMAL_Y_LIMIT) {
+            if (normal == null || Math.abs(normal.y()) > WALL_NORMAL_Y_LIMIT) {
                 continue;
             }
 
-            Vector3d horizontalNormal = new Vector3d(normal.getX(), 0.0, normal.getZ());
-            if (horizontalNormal.closeToZero(EPSILON)) {
+            Vector3d horizontalNormal = new Vector3d(normal.x(), 0.0, normal.z());
+            if ((horizontalNormal.lengthSquared() < (EPSILON) * (EPSILON))) {
                 continue;
             }
 
@@ -723,7 +726,7 @@ public class JumpSkillSystem extends EntityTickingSystem<EntityStore> {
             return bestNormal;
         }
 
-        Vector3d adjacentWallNormal = findAdjacentWallNormal(transformComponent);
+        Vector3d adjacentWallNormal = findAdjacentWallNormal(transformComponent, world);
         if (adjacentWallNormal != null) {
             return adjacentWallNormal;
         }
@@ -731,18 +734,16 @@ public class JumpSkillSystem extends EntityTickingSystem<EntityStore> {
         return collisionResult.isSliding ? inferWallNormalFromVelocity(velocity) : null;
     }
 
-    private Vector3d findAdjacentWallNormal(TransformComponent transformComponent) {
-        if (transformComponent == null || transformComponent.getChunk() == null || transformComponent.getPosition() == null) {
+    private Vector3d findAdjacentWallNormal(TransformComponent transformComponent, World world) {
+        if (transformComponent == null || world == null || transformComponent.getPosition() == null) {
             return null;
         }
 
-        WorldChunk chunk = transformComponent.getChunk();
+        SectionReader blocks = new SectionReader(world.getChunkStore());
         Vector3d position = transformComponent.getPosition();
-        int chunkWorldX = chunk.getX() * 16;
-        int chunkWorldZ = chunk.getZ() * 16;
-        int baseX = (int) Math.floor(position.getX());
-        int baseY = (int) Math.floor(position.getY());
-        int baseZ = (int) Math.floor(position.getZ());
+        int baseX = (int) Math.floor(position.x());
+        int baseY = (int) Math.floor(position.y());
+        int baseZ = (int) Math.floor(position.z());
 
         int[][] directions = {
             {1, 0},
@@ -754,8 +755,8 @@ public class JumpSkillSystem extends EntityTickingSystem<EntityStore> {
         for (int[] direction : directions) {
             int sampleX = baseX + direction[0];
             int sampleZ = baseZ + direction[1];
-            if (isSolidWallBlock(chunk, chunkWorldX, chunkWorldZ, sampleX, baseY, sampleZ)
-                || isSolidWallBlock(chunk, chunkWorldX, chunkWorldZ, sampleX, baseY + 1, sampleZ)) {
+            if (isSolidWallBlock(blocks, sampleX, baseY, sampleZ)
+                || isSolidWallBlock(blocks, sampleX, baseY + 1, sampleZ)) {
                 return new Vector3d(-direction[0], 0.0, -direction[1]);
             }
         }
@@ -763,25 +764,12 @@ public class JumpSkillSystem extends EntityTickingSystem<EntityStore> {
         return null;
     }
 
-    private boolean isSolidWallBlock(
-        WorldChunk chunk,
-        int chunkWorldX,
-        int chunkWorldZ,
-        int worldX,
-        int worldY,
-        int worldZ
-    ) {
-        if (worldY < 0) {
+    private boolean isSolidWallBlock(SectionReader blocks, int worldX, int worldY, int worldZ) {
+        if (worldY < 0 || !blocks.canHoldY(worldY) || !blocks.hasStorageInMemory(worldX, worldY, worldZ)) {
             return false;
         }
 
-        int localX = worldX - chunkWorldX;
-        int localZ = worldZ - chunkWorldZ;
-        if (localX < 0 || localX >= 16 || localZ < 0 || localZ >= 16) {
-            return false;
-        }
-
-        return chunk.getBlock(localX, worldY, localZ) != 0;
+        return blocks.getBlock(worldX, worldY, worldZ) != 0;
     }
 
     private Vector3d inferWallNormalFromVelocity(Velocity velocity) {
@@ -790,6 +778,6 @@ public class JumpSkillSystem extends EntityTickingSystem<EntityStore> {
         }
 
         Vector3d horizontalVelocity = new Vector3d(-velocity.getX(), 0.0, -velocity.getZ());
-        return horizontalVelocity.closeToZero(EPSILON) ? null : horizontalVelocity.normalize();
+        return (horizontalVelocity.lengthSquared() < (EPSILON) * (EPSILON)) ? null : horizontalVelocity.normalize();
     }
 }

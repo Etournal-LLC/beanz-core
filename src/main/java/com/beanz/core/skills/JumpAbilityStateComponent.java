@@ -1,6 +1,6 @@
 package com.beanz.core.skills;
 
-import com.hypixel.hytale.math.vector.Vector3d;
+import org.joml.Vector3d;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -234,17 +234,17 @@ public class JumpAbilityStateComponent implements Component<EntityStore> {
 
     public Vector3d getRecentWallNormal() {
         Vector3d wallNormal = new Vector3d(recentWallNormalX, 0.0, recentWallNormalZ);
-        return wallNormal.closeToZero(0.0001) ? null : wallNormal.normalize();
+        return (wallNormal.lengthSquared() < (0.0001) * (0.0001)) ? null : wallNormal.normalize();
     }
 
     public void updateRecentWallContact(Vector3d wallNormal, int graceTicks) {
-        if (wallNormal == null || wallNormal.closeToZero(0.0001)) {
+        if (wallNormal == null || (wallNormal.lengthSquared() < (0.0001) * (0.0001))) {
             return;
         }
 
-        Vector3d normalized = new Vector3d(wallNormal.getX(), 0.0, wallNormal.getZ()).normalize();
-        recentWallNormalX = normalized.getX();
-        recentWallNormalZ = normalized.getZ();
+        Vector3d normalized = new Vector3d(wallNormal.x(), 0.0, wallNormal.z()).normalize();
+        recentWallNormalX = normalized.x();
+        recentWallNormalZ = normalized.z();
         recentWallContactTicks = graceTicks;
     }
 
