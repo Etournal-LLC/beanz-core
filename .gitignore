@@ -44,7 +44,8 @@ Thumbs.db
 .env
 
 # Claude Code worktrees / session machinery
-.claude/
+.claude/*
+!.claude/board.json
 
 # Nested separate repo (unrelated project living in this folder)
 sentral-core/

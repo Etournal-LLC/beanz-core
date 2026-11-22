@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "build": {
+    "key": "beanz-core",
+    "name": "Beanz Core (Hytale mod)",
+    "defaultBranch": "main"
+  },
+  "projects": [
+    {
+      "key": "shards",
+      "name": "Shards in Hytale",
+      "specDoc": "SHARDS-PLAN.md",
+      "branch": "feature/shards",
+      "worktree": "shards",
+      "model": "opus",
+      "baseIfMissing": "main",
+      "status": "ready",
+      "badge": "feature",
+      "kickoffPrompt": "You are the Shards in Hytale build session for beanz-core, the Hytale mod at C:/dev/hytale/beanz-core. Read CLAUDE.md, SHARDS-PLAN.md, PLAN.md and docs/hytale/README.md FIRST - SHARDS-PLAN.md carries every decision made so far and you have no other context. The goal: bring the Shards ruleset (C:/dev/shards, READ-ONLY - never edit that repo) into Hytale as part of this mod. A player kills a monster, takes its shard, binds it into one of 24 body slots (Head, Body, Arms, Legs, six each) and gains one of that monster type's abilities. Shards writes every ability as a mix of 55 effect kinds (C:/dev/shards/data/effects.json, abilities in C:/dev/shards/docs/ability-catalog.json); the mod codes each kind once and reads abilities as data. Tabletop math (d100, AS vs DS, critical tables) is dropped - Hytale real-time combat does the hitting. Work the next unbuilt phase in SHARDS-PLAN.md (BS0 first: a throwaway spike proving six risky pieces, ending in a findings note under docs/hytale/ and a ruling from Jonathan on the ability-key scheme). Target the Hytale version the server runs (0.7.5). Build with ./gradlew jar and deploy with ./gradlew deployToHytale (Java 21). Jonathan is a project manager, not a developer: brief him in plain English in the session check-in format, get a ruling before building on any open decision, and never quietly pick an open number.",
+      "notes": "2026-11-22: plan written and committed (SHARDS-PLAN.md). Nothing built. Next: BS0 spike.",
+      "phases": [
+        {
+          "id": "BS0",
+          "title": "Spike: prove the six risky pieces in a throwaway test (mob drops a custom item, firing several active abilities, buff + damage over time + status from code, per-player save, clickable menu, built-in particles and sounds). Ends with a findings note and a ruling on the ability-key scheme",
+          "model": "opus",
+          "effort": "high",
+          "status": "todo"
+        },
+        {
+          "id": "BS1",
+          "title": "Shard core: load the Shards data at startup, per-player shard body (24 slots, regions, depth, Focus), saved across relogs, /shard give for testing",
+          "model": "sonnet",
+          "effort": "medium",
+          "status": "todo"
+        },
+        {
+          "id": "BS2",
+          "title": "Shard menu: Body, Bind, Ability and Codex screens. A player binds a shard and picks its ability with no commands",
+          "model": "opus",
+          "effort": "high",
+          "status": "todo"
+        },
+        {
+          "id": "BS3",
+          "title": "Building blocks: the effect engine for the most-used easy effect kinds, plus the look-and-sound presets per damage type",
+          "model": "fable",
+          "effort": "high",
+          "status": "todo"
+        },
+        {
+          "id": "BS4",
+          "title": "First slice: 4 monster types x 4 regions x first 2 abilities = 32 Pearl abilities with riders (Greenskin, Hollow, Crawler, Beast)",
+          "model": "sonnet",
+          "effort": "medium",
+          "status": "todo"
+        },
+        {
+          "id": "BS5",
+          "title": "Shardforger and drops: shard drops on the four mob families, Shardforger NPC opens the menu in binding mode, costly unbind",
+          "model": "sonnet",
+          "effort": "medium",
+          "status": "todo"
+        },
+        {
+          "id": "BS6",
+          "title": "Ranks: ability ranks 1-20, how points are earned in Hytale, rank spending in the menu",
+          "model": "opus",
+          "effort": "high",
+          "status": "todo"
+        },
+        {
+          "id": "BS7",
+          "title": "Server test: install beanz-core on the Beanzgaming server, play it with the group, decide what happens to MMO Skill Tree",
+          "model": "sonnet",
+          "effort": "medium",
+          "status": "todo"
+        }
+      ]
+    }
+  ]
+}
