@@ -56,6 +56,24 @@ phase (BS2), and a clickable-menu test was added to the spike.
 After BS7: more monster types, the medium building blocks, the Onyx-to-Diamond versions and Shaping
 (the seven peoples).
 
+## Launch models
+
+Each phase runs on the cheapest model that can do it well (Jonathan, 2026-11-22). Fable is kept for the
+one phase where a design mistake would be expensive to undo.
+
+| Phase | Model | Why |
+|---|---|---|
+| BS0 Spike | Opus | Digging through an engine with thin documentation. Needs strong investigation, but nothing here is kept |
+| BS1 Shard core | Sonnet | Loading data and saving per-player state. Follows patterns beanz-core already has |
+| BS2 Shard menu | Opus | Hytale's menu markup is quirky, and the screens have to feel good to use |
+| BS3 Building blocks | Fable | The effect engine every ability runs on, plus turning tabletop effects into real-time ones. Everything after rests on it |
+| BS4 First slice | Sonnet | 32 abilities as data on top of the finished engine, then tuning |
+| BS5 Shardforger and drops | Sonnet | An NPC, drop tables and the unbind price. Standard mod work |
+| BS6 Ranks | Opus | Balance numbers and how points are earned. Judgment over volume |
+| BS7 Server test | Sonnet | Install, configuration and reading logs |
+
+If a Sonnet phase gets stuck on an engine quirk, step that phase up to Opus without re-planning.
+
 ## The shard menu (BS2)
 
 The menu is where a player builds their character, so it gets its own phase. Four screens:
