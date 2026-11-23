@@ -10,7 +10,9 @@ import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
+import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
+import com.hypixel.hytale.server.core.modules.interaction.Interactions;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -45,6 +47,7 @@ public class SpikeCommand extends AbstractPlayerCommand {
             case "give" -> give(args, store, ref);
             case "runes" -> runes(store, ref);
             case "norunes" -> noRunes(store, ref);
+            case "override" -> override(args, store, ref);
             case "fx" -> args.length > 1 ? SpikeFx.particle(args[1], ref, store) : "usage: /spike fx <ParticleSystemId>";
             case "sound" -> args.length > 1 ? SpikeFx.sound(args[1], ref, store) : "usage: /spike sound <SoundEventId>";
             case "effect" -> args.length > 1 ? SpikeFx.effect(args[1], seconds(args), ref, ref, store) : "usage: /spike effect <EffectId> [seconds]";
@@ -59,7 +62,7 @@ public class SpikeCommand extends AbstractPlayerCommand {
                 SpikeShardDropSystem.dropForAnyMob = args.length < 2 || !"off".equalsIgnoreCase(args[1]);
                 yield "shard drops from every mob: " + (SpikeShardDropSystem.dropForAnyMob ? "ON" : "OFF");
             }
-            default -> "/spike menu | give shard|focus | runes | norunes | fx <id> | sound <id> | effect <id> [s] | near <id> [s] | list | add <text> | clear | dropall [off]";
+            default -> "/spike menu | give shard|focus | runes | norunes | override <key|off> | fx <id> | sound <id> | effect <id> [s] | near <id> [s] | list | add <text> | clear | dropall [off]";
         };
         context.sendMessage(Message.raw("[Spike] " + reply));
     }
@@ -111,6 +114,41 @@ public class SpikeCommand extends AbstractPlayerCommand {
         ItemContainer inv = slots.getInventory();
         inv.clear();
         return "ability slots emptied (" + inv.getCapacity() + "). E and R now only fire from what you hold";
+    }
+
+    /**
+     * Per-player key override: the player's own Interactions component is checked before the held item,
+     * so a key set here should fire even while a weapon is held. /spike override h|q|e|r, or off.
+     */
+    private String override(String[] args, Store<EntityStore> store, Ref<EntityStore> ref) {
+        String key = args.length > 1 ? args[1].toLowerCase() : "h";
+        if ("off".equals(key)) {
+            Interactions existing = store.getComponent(ref, Interactions.getComponentType());
+            if (existing != null) {
+                for (InteractionType t : new InteractionType[] {InteractionType.Ability1, InteractionType.Ability2, InteractionType.Ability3, InteractionType.Ability4}) {
+                    if (existing.getInteractionId(t) != null && existing.getInteractionId(t).startsWith("Root_BeanzSpikeCast_")) {
+                        existing.removeInteractionId(t);
+                    }
+                }
+            }
+            return "spike key overrides removed";
+        }
+        InteractionType type = switch (key) {
+            case "q" -> InteractionType.Ability1;
+            case "e" -> InteractionType.Ability2;
+            case "r" -> InteractionType.Ability3;
+            default -> InteractionType.Ability4;
+        };
+        String n = type.name().substring("Ability".length());
+        Interactions interactions = store.getComponent(ref, Interactions.getComponentType());
+        boolean created = interactions == null;
+        if (created) {
+            interactions = new Interactions();
+            store.putComponent(ref, Interactions.getComponentType(), interactions);
+        }
+        interactions.setInteractionId(type, "Root_BeanzSpikeCast_Ability" + n);
+        return type.name() + " now overridden for you" + (created ? " (new key list)" : " (added to existing key list)")
+            + ". Hold a sword and press that key";
     }
 
     private String add(String[] args, Store<EntityStore> store, Ref<EntityStore> ref) {
