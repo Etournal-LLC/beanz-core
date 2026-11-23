@@ -135,15 +135,25 @@ with an `Ability` block works there: E and R fired the spike abilities while hol
 ability block already carries `Cooldown`, `Cost` (mana), a `Weapons` restriction, keywords and attributes.
 Q (Ability1) stays the weapon's signature move; H (Ability4) reads the held item and only the crossbow uses it.
 
-| Option | How it plays | Good | Bad |
-|---|---|---|---|
+**Proven keys with a weapon held:** Q, E, R and H can all fire shard abilities through the per-player key
+override (`Interactions` component), and each key reads crouching, so each key can carry two abilities.
+Mods cannot add new keys: the client only reports a fixed set of actions, and the rest (click, block, F,
+number keys) are needed for normal play.
+
+| Option | Abilities ready with a weapon out | Cost |
+|---|---|---|
+| **A. E, R, H + crouch** | 6 | None: Q stays the weapon's special move |
+| **B. Q, E, R, H + crouch** | 8 | Replaces every weapon's special move with shard abilities |
+| C. Either, without crouch | 3 or 4 | Simpler to play, fewer abilities |
+
+Still untested extras: tap vs hold on a key, and switching saved sets with the Z utility selector.
+
+---|---|---|---|
 | **A. Hytale's ability slots (E, R)** | Binding a shard's active puts its ability item in an ability slot; E and R cast it whatever you hold | Proven in-game. Weapon untouched. Real-time. Uses Hytale's own cooldown and mana | Only 2 keys (3 if H is used) |
 | **B. Cast items on the hotbar** (MMO Skill Tree way) | Hotbar slots hold ability items: press 7, 8 or 9, then click | Proven by another mod. 3+ actives | Swaps you off your weapon every cast. Eats hotbar slots |
 | **C. Quick-select wheel** | Press a key, a menu opens, pick the ability | Any number of actives | Hytale menus take over the screen. Too slow for combat |
 
 (The old "Focus in the off hand" option is dropped: E and R ignore held items.)
-
-Second number to set: how many actives sit on keys (2 = E and R, or 3 = also H).
 
 ---
 
@@ -180,6 +190,7 @@ In-game test in `beanztest` on 2026-11-22 (Hytale 0.7.7):
 | 3b. Focus in a utility slot (Z selector) | Empty main hand: Q, E, R, H all fire from it. **Sword in main hand + `/spike norunes`: nothing fires.** The main-hand item wins for every key (whole item, not per key), so a utility item gives no abilities while a weapon is held. With a weapon out, only E and R (the hidden ability slots) are free for shards; H would need the untested per-player `Interactions` override |
 | Lag | E and R lagged the game badly. Cause: `Effect_Fire` and `Buff_Enrage` are **looping** particles (some spawners have no `LifeSpan`, e.g. `Enrage_Particles`, 220 particles), built to ride on an entity effect. Spawned at a spot, each press left one running forever. Swapped for one-shot bursts (`Impact_Critical`, `Impact_Poison`). **Rule for BS3:** world-spawned ability visuals must be one-shot; looping visuals belong inside an entity effect so they stop when it ends |
 | 3c. Per-player key override | **Works.** Setting `Interactions.setInteractionId(Ability4 / Ability1, root)` on the player makes H and Q fire the spike ability while holding a sword (the player's `Interactions` component is checked before the held item). So all four of Q, E, R, H can carry shard abilities with a weapon out; using Q replaces the weapon's signature move |
+| 3d. Crouch + key | **Works.** The cast interaction reads `MovementStatesComponent.getMovementStates().crouching`, so each key can fire a second ability while crouching. With overrides on Q, E, R, H that is 8 abilities with a weapon out |
 | 4. Buff on self | `Beanz_Spike_Haste` (mod-authored) works |
 | 5a. DoT on a mob | `Beanz_Spike_Bleed` (mod-authored) damages a nearby mob |
 | 5b. Status effect | Built-in `Stun` froze a nearby mob for 5 seconds |
