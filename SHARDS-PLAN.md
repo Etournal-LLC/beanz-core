@@ -4,8 +4,8 @@ Bring the Shards ruleset (`C:\dev\shards`) into Hytale as part of beanz-core. Ki
 its shard, have a Shardforger bind it into one of your body slots, and gain one of that monster's
 abilities.
 
-Drafted 2026-11-22. **BS0 in progress (2026-11-22):** spike built and boot-tested; waiting on Jonathan's
-in-game test and the ability-key ruling. Findings: `docs/hytale/shards-bs0-findings.md`.
+Drafted 2026-11-22. **BS0 in progress (2026-11-22):** all six pieces passed Jonathan's in-game test;
+only the ability-key ruling is left. Next: test number keys casting abilities (the "big ability bar"). Findings: `docs/hytale/shards-bs0-findings.md`.
 
 ---
 
@@ -109,9 +109,11 @@ an interaction, see `docs/hytale/interactions/interaction-reference.md`). beanz-
 
 ## Open decisions
 
-1. **Ability keys (decided at BS0).** Hytale has a few ability keys, and they belong to the held item.
-   Passives (309 of 960) need no key. Options for actives: a few "equipped" actives on the keys, a
-   shard item you hold, or a quick-select wheel.
+1. **Ability keys (decided at BS0, still open).** Proven in-game: Q, E, R, H can fire shard abilities
+   with a weapon held (per-player key override), and crouch + key gives each key a second ability.
+   Jonathan wants one big ability hotbar. Next test: number keys 1-9 cast instead of switching items
+   (the server can cancel a hotbar switch); with crouch that is two rows of 9 plus E/R = 22.
+   Mods cannot add keys or widen the 9-slot hotbar. Passives (309 of 960) need no key.
 2. **How ranks are earned (BS6).** Shards uses spent experience. In Hytale that could come from kills,
    use, or contracts.
 3. **MMO Skill Tree (BS7).** Removing it also affects Perfect Parries, PartyPro and the Mastery Pack,

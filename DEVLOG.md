@@ -12,7 +12,10 @@ Raw session notes — decisions, dead ends, context. Newest entries on top.
 - Big finding for BS3: Hytale entity-effect assets already do DoT, damage buffs/resists, stat mods, slow/haste, stun/root and immunity as data. Mod-authored effects load fine.
 - Weapons only use Primary/Secondary/Ability1 (crossbow +Ability4): Ability2/3 are free. MMO Skill Tree fires actives from cast items in hotbar slots 7-9.
 - Enabled BeanzCore in the `beanztest` world config (backup `config.json.before-bs0`).
-- Waiting on: Jonathan's in-game test (list in the findings note) and the ability-key ruling.
+- In-game test (beanztest) passed: mod loads, menu clicks reach the server, shard drops (Skeleton -> Hollow family), Haste buff, Bleed DoT on a mob, Stun, particles, sounds, saved list survives a relog.
+- Key findings: in 0.7.7 E/R fire the hidden AbilitySlots (Hytale's rune system), not the held item. A held weapon blocks a utility item's keys. The player's own `Interactions` component beats the held weapon, so Q/E/R/H can all carry shard abilities. Crouch is readable on each press (x2 abilities per key). Mods can't add keys or widen the 9-slot hotbar.
+- Gotchas: buff particles (Effect_Fire, Buff_Enrage) loop forever when world-spawned and lagged the client; particle/sound ids are case-sensitive; /gamemode refused in singleplayer.
+- Jonathan finds ability switching not smooth and wants one big ability hotbar; briefly floated Unity from scratch, recommended staying in Hytale. Next: test number keys casting abilities (cancel `InventoryActiveSlotRequestEvent`), watch for client flicker. Then the key ruling closes BS0.
 
 ---
 
