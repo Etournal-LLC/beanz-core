@@ -4,7 +4,8 @@ Bring the Shards ruleset (`C:\dev\shards`) into Hytale as part of beanz-core. Ki
 its shard, have a Shardforger bind it into one of your body slots, and gain one of that monster's
 abilities.
 
-Drafted 2026-11-22. Nothing built yet.
+Drafted 2026-11-22. **BS0 in progress (2026-11-22):** spike built and boot-tested; waiting on Jonathan's
+in-game test and the ability-key ruling. Findings: `docs/hytale/shards-bs0-findings.md`.
 
 ---
 
@@ -115,6 +116,9 @@ an interaction, see `docs/hytale/interactions/interaction-reference.md`). beanz-
    use, or contracts.
 3. **MMO Skill Tree (BS7).** Removing it also affects Perfect Parries, PartyPro and the Mastery Pack,
    which plug into it.
+5. **Hytale version (found at BS0).** This PC runs 0.7.7, which needs Java 25; the plan says the server
+   runs 0.7.5. The mod is now built against 0.7.7 and declares `>=0.7.5 <0.8.0`. Confirm the server's
+   version before BS7.
 4. **Projects Hub entry.** The hub scripts only look for repos directly under `C:\dev`, and beanz-core sits
    one folder deeper (`C:\dev\hytale\beanz-core`). Its `.gitignore` also ignores `.claude/`, where
    `board.json` lives. Until both are fixed, this project doesn't appear on the hub.

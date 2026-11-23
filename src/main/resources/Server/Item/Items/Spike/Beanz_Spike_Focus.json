@@ -1,0 +1,34 @@
+{
+  "TranslationProperties": {
+    "Name": "Spike Shard Focus",
+    "Description": "BS0 spike: each ability key says in chat whether it fired. Try it in the main hand and in the off hand."
+  },
+  "Icon": "Icons/ItemsGenerated/Recipe_Page.png",
+  "Categories": [
+    "Items.Recipes"
+  ],
+  "PlayerAnimationsId": "Item",
+  "Quality": "Rare",
+  "MaxStack": 1,
+  "Model": "Items/Consumables/Recipes/Recipe.blockymodel",
+  "Texture": "Items/Consumables/Recipes/Recipe_Texture.png",
+  "Utility": {
+    "Usable": true,
+    "Compatible": true
+  },
+  "IconProperties": {
+    "Scale": 0.76,
+    "Rotation": [135, 135, 0],
+    "Translation": [-1, 5]
+  },
+  "Interactions": {
+    "Ability1": "Root_BeanzSpikeCast_Ability1",
+    "Ability2": "Root_BeanzSpikeCast_Ability2",
+    "Ability3": "Root_BeanzSpikeCast_Ability3",
+    "Ability4": "Root_BeanzSpikeCast_Ability4"
+  },
+  "Tags": {
+    "Type": ["Consumable"],
+    "Family": ["BeanzAbility"]
+  }
+}

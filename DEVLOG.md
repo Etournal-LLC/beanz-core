@@ -4,6 +4,18 @@ Raw session notes — decisions, dead ends, context. Newest entries on top.
 
 ---
 
+## [2026-11-22] Shards BS0 spike
+- beanz-core had not loaded in any world since at least June 2026: the local game auto-updated (now 0.7.7, Java 25, JOML vectors) and the manifest's bare `ServerVersion` string is rejected. Ported (commit 8c8cd49): Java 25 build, JOML vector calls, HUD id, `ServerVersion >=0.7.5 <0.8.0`. The old wall-detection helper in JumpSkillSystem is uncalled; ported minimally.
+- Build: Temurin JDK 25 unpacked at `~/.jdks/jdk-25.0.5.1+2`; gradle wrapper jar regenerated (gitignored).
+- New trick: boot the server jar headless (`--assets Assets.zip --auth-mode offline`, mods in `./mods`) to check the mod loads and assets validate in ~15s. `--generate-asset-schema` dumps every asset schema; five saved under `docs/hytale/schema-0.7.7/`.
+- Spike built under `com.beanz.core.spike` + `Spike` asset folders, driven by `/spike`: per-player saved list, clickable menu (`InteractiveCustomUIPage`), Shard Focus item with Ability1-4, mob-death shard drop, entity effects (built-in + two mod-authored), particles and sounds. All load cleanly on a 0.7.7 boot.
+- Big finding for BS3: Hytale entity-effect assets already do DoT, damage buffs/resists, stat mods, slow/haste, stun/root and immunity as data. Mod-authored effects load fine.
+- Weapons only use Primary/Secondary/Ability1 (crossbow +Ability4): Ability2/3 are free. MMO Skill Tree fires actives from cast items in hotbar slots 7-9.
+- Enabled BeanzCore in the `beanztest` world config (backup `config.json.before-bs0`).
+- Waiting on: Jonathan's in-game test (list in the findings note) and the ability-key ruling.
+
+---
+
 ## [2026-04-20] New docs structure
 - Adopted root-level CLAUDE.md / DEVLOG.md / PLAN.md / CHANGELOG.md / ROADMAP.md pattern.
 - Seeded from `docs/dev/changes.md` + `discoveries.md` + git log.

@@ -1,0 +1,21 @@
+{
+  "ApplicationEffects": {
+    "EntityBottomTint": "#200000",
+    "EntityTopTint": "#b00000",
+    "Particles": [
+      {
+        "SystemId": "Impact_Critical"
+      }
+    ]
+  },
+  "DamageCalculatorCooldown": 1,
+  "DamageCalculator": {
+    "BaseDamage": {
+      "Slashing": 2
+    }
+  },
+  "OverlapBehavior": "Overwrite",
+  "Infinite": false,
+  "Debuff": true,
+  "Duration": 6
+}

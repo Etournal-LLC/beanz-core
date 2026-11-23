@@ -1,0 +1,6 @@
+{
+  "$Comment": "BS0 spike: reports that Ability2 fired",
+  "Type": "Beanz_Spike_Cast",
+  "Slot": "Ability2",
+  "Particle": "Effect_Fire"
+}

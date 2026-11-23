@@ -7,6 +7,10 @@ import com.beanz.core.abilities.TestAbility3Interaction;
 import com.beanz.core.abilities.WearableAbilityTestStateComponent;
 import com.beanz.core.abilities.WearableAbilityTestSystem;
 import com.beanz.core.skills.JumpSkillSystem;
+import com.beanz.core.spike.SpikeCastInteraction;
+import com.beanz.core.spike.SpikeCommand;
+import com.beanz.core.spike.SpikeListComponent;
+import com.beanz.core.spike.SpikeShardDropSystem;
 import com.beanz.core.skills.JumpFallDamageSystem;
 import com.beanz.core.skills.JumpAbilityStateComponent;
 import com.beanz.core.skills.PlayerSkillsComponent;
@@ -108,6 +112,17 @@ public class BeanzCoreMod extends JavaPlugin {
                 RunningAbilityStateComponent.CODEC
             )
         );
+        // BS0 Shards spike (throwaway): saved list, multi-key cast, mob shard drop, /spike command.
+        SpikeListComponent.setComponentType(
+            getEntityStoreRegistry().registerComponent(
+                SpikeListComponent.class,
+                "beanz:spike_list",
+                SpikeListComponent.CODEC
+            )
+        );
+        getCodecRegistry(Interaction.CODEC).register(SpikeCastInteraction.TYPE_ID, SpikeCastInteraction.class, SpikeCastInteraction.CODEC);
+        getEntityStoreRegistry().registerSystem(new SpikeShardDropSystem());
+        getCommandRegistry().registerCommand(new SpikeCommand());
         getCodecRegistry(Interaction.CODEC).register("Beanz_Test_Ability", TestAbility3Interaction.class, TestAbility3Interaction.CODEC);
         getCodecRegistry(Interaction.CODEC).register("Beanz_Overdrive", OverdriveInteraction.class, OverdriveInteraction.CODEC);
         getEntityStoreRegistry().registerSystem(new JumpSkillSystem());

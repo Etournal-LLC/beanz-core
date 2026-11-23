@@ -1,0 +1,9 @@
+{
+  "Parent": "Ingredient_Crystal_Purple",
+  "TranslationProperties": {
+    "Name": "Spike Test Shard",
+    "Description": "BS0 spike: dropped by Trork, skeletons, spiders, wolves and bears."
+  },
+  "Quality": "Rare",
+  "MaxStack": 25
+}

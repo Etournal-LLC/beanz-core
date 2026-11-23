@@ -1,0 +1,22 @@
+{
+  "ApplicationEffects": {
+    "HorizontalSpeedMultiplier": 1.5,
+    "Particles": [
+      {
+        "SystemId": "Buff_Enrage",
+        "TargetNodeName": "Chest"
+      }
+    ]
+  },
+  "OutgoingDamage": {
+    "Physical": [
+      {
+        "CalculationType": "Percent",
+        "Amount": 0.2
+      }
+    ]
+  },
+  "OverlapBehavior": "Overwrite",
+  "Debuff": false,
+  "Duration": 10
+}
