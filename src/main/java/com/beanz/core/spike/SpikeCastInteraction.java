@@ -10,6 +10,7 @@ import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.entity.movement.MovementStatesComponent;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInstantInteraction;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -50,13 +51,17 @@ public class SpikeCastInteraction extends SimpleInstantInteraction {
         Player player = buffer.getComponent(ref, Player.getComponentType());
         PlayerRef playerRef = player != null ? player.getPlayerRef() : null;
 
-        String line = "[Spike] key fired: slot=" + slot + " input=" + interactionType;
+        MovementStatesComponent movement = buffer.getComponent(ref, MovementStatesComponent.getComponentType());
+        boolean crouching = movement != null && movement.getMovementStates() != null && movement.getMovementStates().crouching;
+
+        String line = "[Spike] key fired: slot=" + slot + " input=" + interactionType + (crouching ? " CROUCHING (second ability)" : " standing");
         LOGGER.atInfo().log("[BeanzCore][Spike] %s player=%s", line, playerRef != null ? playerRef.getUsername() : "?");
         if (playerRef != null) {
             playerRef.sendMessage(Message.raw(line));
         }
-        if (particle != null && !particle.isEmpty()) {
-            SpikeFx.particle(particle, ref, buffer);
+        String shown = crouching ? "Impact_Poison" : particle;
+        if (shown != null && !shown.isEmpty()) {
+            SpikeFx.particle(shown, ref, buffer);
         }
     }
 }

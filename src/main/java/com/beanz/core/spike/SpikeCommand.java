@@ -62,7 +62,7 @@ public class SpikeCommand extends AbstractPlayerCommand {
                 SpikeShardDropSystem.dropForAnyMob = args.length < 2 || !"off".equalsIgnoreCase(args[1]);
                 yield "shard drops from every mob: " + (SpikeShardDropSystem.dropForAnyMob ? "ON" : "OFF");
             }
-            default -> "/spike menu | give shard|focus | runes | norunes | override <key|off> | fx <id> | sound <id> | effect <id> [s] | near <id> [s] | list | add <text> | clear | dropall [off]";
+            default -> "/spike menu | give shard|focus | runes | norunes | override <q|e|r|h|all|off> | fx <id> | sound <id> | effect <id> [s] | near <id> [s] | list | add <text> | clear | dropall [off]";
         };
         context.sendMessage(Message.raw("[Spike] " + reply));
     }
@@ -139,6 +139,12 @@ public class SpikeCommand extends AbstractPlayerCommand {
             case "r" -> InteractionType.Ability3;
             default -> InteractionType.Ability4;
         };
+        if ("all".equals(key)) {
+            for (String k : new String[] {"q", "e", "r", "h"}) {
+                override(new String[] {"override", k}, store, ref);
+            }
+            return "Q, E, R and H all overridden for you. Hold a sword and press each, standing and crouching";
+        }
         String n = type.name().substring("Ability".length());
         Interactions interactions = store.getComponent(ref, Interactions.getComponentType());
         boolean created = interactions == null;
