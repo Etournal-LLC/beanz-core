@@ -177,6 +177,7 @@ In-game test in `beanztest` on 2026-11-22 (Hytale 0.7.7):
 | 2. Focus in main hand | Q (Ability1) and H (Ability4) fire. E and R do nothing |
 | 2b. `/spike runes` (built-in ability slots) | **E fires `slot=Ability2` and R fires `slot=Ability3` while holding any item, with the spell particle.** Hytale's own ability-slot (rune) system works for mod abilities |
 | 3. Off hand | Moot: E and R never read the held item in 0.7.7 |
+| 3b. Focus in a utility slot (Z selector) | Empty main hand: Q, E, R, H all fire from it. **Sword in main hand + `/spike norunes`: nothing fires.** The main-hand item wins for every key (whole item, not per key), so a utility item gives no abilities while a weapon is held. With a weapon out, only E and R (the hidden ability slots) are free for shards; H would need the untested per-player `Interactions` override |
 | Lag | E and R lagged the game badly. Cause: `Effect_Fire` and `Buff_Enrage` are **looping** particles (some spawners have no `LifeSpan`, e.g. `Enrage_Particles`, 220 particles), built to ride on an entity effect. Spawned at a spot, each press left one running forever. Swapped for one-shot bursts (`Impact_Critical`, `Impact_Poison`). **Rule for BS3:** world-spawned ability visuals must be one-shot; looping visuals belong inside an entity effect so they stop when it ends |
 | 4. Buff on self | `Beanz_Spike_Haste` (mod-authored) works |
 | 5a. DoT on a mob | `Beanz_Spike_Bleed` (mod-authored) damages a nearby mob |
