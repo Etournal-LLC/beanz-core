@@ -44,6 +44,7 @@ public class SpikeCommand extends AbstractPlayerCommand {
             case "menu" -> openMenu(store, ref, playerRef);
             case "give" -> give(args, store, ref);
             case "runes" -> runes(store, ref);
+            case "norunes" -> noRunes(store, ref);
             case "fx" -> args.length > 1 ? SpikeFx.particle(args[1], ref, store) : "usage: /spike fx <ParticleSystemId>";
             case "sound" -> args.length > 1 ? SpikeFx.sound(args[1], ref, store) : "usage: /spike sound <SoundEventId>";
             case "effect" -> args.length > 1 ? SpikeFx.effect(args[1], seconds(args), ref, ref, store) : "usage: /spike effect <EffectId> [seconds]";
@@ -58,7 +59,7 @@ public class SpikeCommand extends AbstractPlayerCommand {
                 SpikeShardDropSystem.dropForAnyMob = args.length < 2 || !"off".equalsIgnoreCase(args[1]);
                 yield "shard drops from every mob: " + (SpikeShardDropSystem.dropForAnyMob ? "ON" : "OFF");
             }
-            default -> "/spike menu | give shard|focus | runes | fx <id> | sound <id> | effect <id> [s] | near <id> [s] | list | add <text> | clear | dropall [off]";
+            default -> "/spike menu | give shard|focus | runes | norunes | fx <id> | sound <id> | effect <id> [s] | near <id> [s] | list | add <text> | clear | dropall [off]";
         };
         context.sendMessage(Message.raw("[Spike] " + reply));
     }
@@ -99,6 +100,17 @@ public class SpikeCommand extends AbstractPlayerCommand {
         inv.setItemStackForSlot((short) 0, new ItemStack("Beanz_Spike_Rune_A", 1));
         inv.setItemStackForSlot((short) 3, new ItemStack("Beanz_Spike_Rune_B", 1));
         return "test runes placed (slots " + capacity + (created ? ", newly created" : "") + "). Now press E (Ability2) and R (Ability3) holding anything";
+    }
+
+    /** Empties the hidden ability slots, so E and R can only fire from a held or utility item. */
+    private String noRunes(Store<EntityStore> store, Ref<EntityStore> ref) {
+        InventoryComponent.AbilitySlots slots = store.getComponent(ref, InventoryComponent.AbilitySlots.getComponentType());
+        if (slots == null) {
+            return "no ability slots (already empty)";
+        }
+        ItemContainer inv = slots.getInventory();
+        inv.clear();
+        return "ability slots emptied (" + inv.getCapacity() + "). E and R now only fire from what you hold";
     }
 
     private String add(String[] args, Store<EntityStore> store, Ref<EntityStore> ref) {
