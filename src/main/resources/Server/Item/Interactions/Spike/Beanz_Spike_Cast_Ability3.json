@@ -2,5 +2,5 @@
   "$Comment": "BS0 spike: reports that Ability3 fired",
   "Type": "Beanz_Spike_Cast",
   "Slot": "Ability3",
-  "Particle": "Buff_Enrage"
+  "Particle": "Impact_Poison"
 }

@@ -158,4 +158,14 @@ happened at each step.
 
 ## Results
 
-(To fill in after the in-game test.)
+In-game test in `beanztest` on 2026-11-22 (Hytale 0.7.7):
+
+| Step | Result |
+|---|---|
+| Mod loads | Yes (server log) |
+| 1. Menu Bind | Clicks reach the server (`action=bind` twice in the log) |
+| 2. Focus in main hand | Q (Ability1) and H (Ability4) fire. E and R do nothing |
+| 2b. `/spike runes` (built-in ability slots) | **E fires `slot=Ability2` and R fires `slot=Ability3` while holding any item, with the spell particle.** Hytale's own ability-slot (rune) system works for mod abilities |
+| 3. Off hand | Moot: E and R never read the held item in 0.7.7 |
+| Lag | E and R lagged the game badly. Cause: `Effect_Fire` and `Buff_Enrage` are **looping** particles (some spawners have no `LifeSpan`, e.g. `Enrage_Particles`, 220 particles), built to ride on an entity effect. Spawned at a spot, each press left one running forever. Swapped for one-shot bursts (`Impact_Critical`, `Impact_Poison`). **Rule for BS3:** world-spawned ability visuals must be one-shot; looping visuals belong inside an entity effect so they stop when it ends |
+| `/gamemode` | Refused in singleplayer (no operator rights). Built-in `Burn` needs Adventure mode, so test damage over time with `Beanz_Spike_Bleed` instead |
