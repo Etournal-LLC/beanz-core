@@ -127,13 +127,23 @@ Components registered with a codec are saved with the player automatically (same
 Two-thirds of Shards abilities are actives (651 of 960). A full 24-slot body would carry about 16 actives,
 far more than any key layout holds, so every option needs a short list of "equipped" actives.
 
+**Found in the in-game test:** in 0.7.7 the E (Ability2) and R (Ability3) keys never read the held item. They
+fire the ability item sitting in the player's hidden **ability slots** (`InventoryComponent.AbilitySlots`:
+slot 0 = E, slot 3 = R), which is Hytale's own rune system (the Runebinder's Lattice bench, "Core" ability
+runestones and "Support" modifier runestones, package `com.hypixel.hytale.builtin.abilities`). A mod item
+with an `Ability` block works there: E and R fired the spike abilities while holding a sword. The built-in
+ability block already carries `Cooldown`, `Cost` (mana), a `Weapons` restriction, keywords and attributes.
+Q (Ability1) stays the weapon's signature move; H (Ability4) reads the held item and only the crossbow uses it.
+
 | Option | How it plays | Good | Bad |
 |---|---|---|---|
-| **A. Shard Focus in the off hand** | Ability2 and Ability3 (maybe Ability4) fire your equipped actives while you keep your weapon | Fast, real-time, weapon untouched | Only works if the in-game test shows the override is per key. 2-3 actives on keys |
-| **B. Cast items on the hotbar** (MMO Skill Tree way) | Hotbar slots hold ability items: press 7, 8 or 9, then click | Proven by another mod. Up to 3+ actives | Swaps you off your weapon every cast. Eats hotbar slots. Clashes with MMO Skill Tree if both stay |
-| **C. Quick-select wheel** | Press a key, a menu opens, pick the ability | Any number of actives | Hytale menus take over the screen and input. Too slow for combat |
+| **A. Hytale's ability slots (E, R)** | Binding a shard's active puts its ability item in an ability slot; E and R cast it whatever you hold | Proven in-game. Weapon untouched. Real-time. Uses Hytale's own cooldown and mana | Only 2 keys (3 if H is used) |
+| **B. Cast items on the hotbar** (MMO Skill Tree way) | Hotbar slots hold ability items: press 7, 8 or 9, then click | Proven by another mod. 3+ actives | Swaps you off your weapon every cast. Eats hotbar slots |
+| **C. Quick-select wheel** | Press a key, a menu opens, pick the ability | Any number of actives | Hytale menus take over the screen. Too slow for combat |
 
-How many actives sit on the keys is a separate number to set once the scheme is picked.
+(The old "Focus in the off hand" option is dropped: E and R ignore held items.)
+
+Second number to set: how many actives sit on keys (2 = E and R, or 3 = also H).
 
 ---
 
@@ -170,4 +180,8 @@ In-game test in `beanztest` on 2026-11-22 (Hytale 0.7.7):
 | Lag | E and R lagged the game badly. Cause: `Effect_Fire` and `Buff_Enrage` are **looping** particles (some spawners have no `LifeSpan`, e.g. `Enrage_Particles`, 220 particles), built to ride on an entity effect. Spawned at a spot, each press left one running forever. Swapped for one-shot bursts (`Impact_Critical`, `Impact_Poison`). **Rule for BS3:** world-spawned ability visuals must be one-shot; looping visuals belong inside an entity effect so they stop when it ends |
 | 4. Buff on self | `Beanz_Spike_Haste` (mod-authored) works |
 | 5a. DoT on a mob | `Beanz_Spike_Bleed` (mod-authored) damages a nearby mob |
+| 5b. Status effect | Built-in `Stun` froze a nearby mob for 5 seconds |
+| 8. Saved list | An entry added with `/spike add` was still there after leaving and reopening the world |
+| 7. Shard drop | Works (log): shards dropped from a fox and rats with `/spike dropall`, and from `Skeleton_Fighter_Wander` correctly sorted into the **Hollow** family |
+| 6. Particles and sounds | First tries failed because ids were typed in lowercase: particle and sound ids are case-sensitive (effect ids are not). `/spike` now matches ignoring case |
 | `/gamemode` | Refused in singleplayer (no operator rights). Built-in `Burn` needs Adventure mode, so test damage over time with `Beanz_Spike_Bleed` instead |
