@@ -1,0 +1,14 @@
+{
+  "Parent": "Ingredient_Rune_Shard",
+  "TranslationProperties": {
+    "Name": "Spike Test Rune B",
+    "Description": "BS0 spike: sits in ability slot for Ability3 (key R) and reports in chat when it fires."
+  },
+  "MaxStack": 1,
+  "Ability": {
+    "Slot": "Core",
+    "Cooldown": 1,
+    "Cost": 0,
+    "Cast": "Root_BeanzSpikeCast_Ability3"
+  }
+}

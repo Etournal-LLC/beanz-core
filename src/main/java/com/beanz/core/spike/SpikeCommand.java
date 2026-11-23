@@ -7,7 +7,9 @@ import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
+import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -41,6 +43,7 @@ public class SpikeCommand extends AbstractPlayerCommand {
         String reply = switch (sub) {
             case "menu" -> openMenu(store, ref, playerRef);
             case "give" -> give(args, store, ref);
+            case "runes" -> runes(store, ref);
             case "fx" -> args.length > 1 ? SpikeFx.particle(args[1], ref, store) : "usage: /spike fx <ParticleSystemId>";
             case "sound" -> args.length > 1 ? SpikeFx.sound(args[1], ref, store) : "usage: /spike sound <SoundEventId>";
             case "effect" -> args.length > 1 ? SpikeFx.effect(args[1], seconds(args), ref, ref, store) : "usage: /spike effect <EffectId> [seconds]";
@@ -55,7 +58,7 @@ public class SpikeCommand extends AbstractPlayerCommand {
                 SpikeShardDropSystem.dropForAnyMob = args.length < 2 || !"off".equalsIgnoreCase(args[1]);
                 yield "shard drops from every mob: " + (SpikeShardDropSystem.dropForAnyMob ? "ON" : "OFF");
             }
-            default -> "/spike menu | give shard|focus | fx <id> | sound <id> | effect <id> [s] | near <id> [s] | list | add <text> | clear | dropall [off]";
+            default -> "/spike menu | give shard|focus | runes | fx <id> | sound <id> | effect <id> [s] | near <id> [s] | list | add <text> | clear | dropall [off]";
         };
         context.sendMessage(Message.raw("[Spike] " + reply));
     }
@@ -74,6 +77,28 @@ public class SpikeCommand extends AbstractPlayerCommand {
         String itemId = "focus".equals(what) ? FOCUS_ITEM_ID : SpikeShardDropSystem.SHARD_ITEM_ID;
         Player.giveItem(new ItemStack(itemId, 1), ref, store);
         return "gave " + itemId;
+    }
+
+    /**
+     * Puts two test ability items into the player's hidden ability slots (the Runebinder's Lattice).
+     * In 0.7.7 the Ability2 key fires the Core item in slot 0 and Ability3 fires slot 3, whatever is held.
+     */
+    private String runes(Store<EntityStore> store, Ref<EntityStore> ref) {
+        InventoryComponent.AbilitySlots slots = store.getComponent(ref, InventoryComponent.AbilitySlots.getComponentType());
+        boolean created = false;
+        if (slots == null) {
+            slots = new InventoryComponent.AbilitySlots((short) 6);
+            store.putComponent(ref, InventoryComponent.AbilitySlots.getComponentType(), slots);
+            created = true;
+        }
+        ItemContainer inv = slots.getInventory();
+        short capacity = inv.getCapacity();
+        if (capacity < 4) {
+            return "ability slots only have " + capacity + " places (need 4)";
+        }
+        inv.setItemStackForSlot((short) 0, new ItemStack("Beanz_Spike_Rune_A", 1));
+        inv.setItemStackForSlot((short) 3, new ItemStack("Beanz_Spike_Rune_B", 1));
+        return "test runes placed (slots " + capacity + (created ? ", newly created" : "") + "). Now press E (Ability2) and R (Ability3) holding anything";
     }
 
     private String add(String[] args, Store<EntityStore> store, Ref<EntityStore> ref) {
