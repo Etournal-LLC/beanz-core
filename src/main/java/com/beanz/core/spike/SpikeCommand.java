@@ -26,6 +26,9 @@ public class SpikeCommand extends AbstractPlayerCommand {
     public SpikeCommand() {
         super("spike", "Shards BS0 spike tests (/spike help)");
         setAllowsExtraArguments(true);
+        // Throwaway test command: open to everyone so it works in a singleplayer world with no operator set.
+        // Never ship this to the server (it hands out items). Removed with the rest of the spike in BS1.
+        requireNoPermission();
     }
 
     @Override
